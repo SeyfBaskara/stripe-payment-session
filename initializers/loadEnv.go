@@ -5,7 +5,9 @@ import (
 )
 
 type Config struct {
-	ServerPort     string `mapstructure:"PORT"`
+	ContentfulSpaceID 		string `mapstructure:"CONTENTFUL_SPACE_ID"`
+	ContentfulAccesToken 	string `mapstructure:"CONTENTFUL_ACCESS_TOKEN"`
+	ServerPort     			string `mapstructure:"PORT"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

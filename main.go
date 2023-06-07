@@ -3,13 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/seyfBaskara/stripe-payment-session/initializers"
+	"github.com/seyfBaskara/stripe-payment-session/services"
 
 )
 
+
 var (
 	server 		*gin.Engine
+
+	product 	services.Products
 )
 
 func init (){
@@ -17,6 +23,8 @@ func init (){
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
+
+	product = services.NewProducts()
 
 	server = gin.Default()
 }
@@ -28,13 +36,19 @@ func main () {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
+	services.Client = &http.Client{Timeout:20 * time.Second}
 
-	router := server.Group("api")
-	router.GET("/ping", func(c *gin.Context) {
-	  c.JSON(http.StatusOK, gin.H{
-		"message": "ponggg",
-	  })
-	})
+	product.GetPrice(config)
+
+
+
+
+	// router := server.Group("api")
+	// router.GET("/ping", func(c *gin.Context) {
+	//   c.JSON(http.StatusOK, gin.H{
+	// 	"message": "ponggg",
+	//   })
+	// })
 	
-	log.Fatal(server.Run(":" + config.ServerPort))
+	// log.Fatal(server.Run(":" + config.ServerPort))
 }
