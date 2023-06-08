@@ -15,7 +15,8 @@ type ProductFields struct {
 	Fields ProductDetails
 }
 type ProductDetails struct {
-	Price int    `json:"price,omitempty"`
+	Price int    `json:"price"`
+	Id int		`json:"id"`
 }
 
 var (
@@ -28,9 +29,10 @@ func NewProducts() Products {
 }
 
 func (p *Products) GetPrice (config initializers.Config){
-	url := fmt.Sprintf("https://cdn.contentful.com/spaces/%v/entries?access_token=%v", config.ContentfulSpaceID, config.ContentfulAccesToken)
 
-	err := GetJson(url, &p)
+	url := fmt.Sprintf("https://cdn.contentful.com/spaces/%s/environments/%s/entries?content_type=%s", config.ContentfulSpaceID, config.EnvironmentID, config.ContentTypes)
+
+	err := GetJson(url, config.ContentfulAccesToken ,&p)
 	if err != nil{
 		fmt.Printf("error getting product: %v\n", err.Error())
 		return
@@ -40,8 +42,15 @@ func (p *Products) GetPrice (config initializers.Config){
 
 }
 
-func GetJson(url string, data interface{}) error {
-	response, err := Client.Get(url)
+func GetJson(url string, token string, data interface{}) error {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	
+	response, err := Client.Do(req)
 	if err != nil {
 		return err
 	}

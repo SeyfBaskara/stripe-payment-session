@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"time"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/seyfBaskara/stripe-payment-session/initializers"
 	"github.com/seyfBaskara/stripe-payment-session/services"
@@ -15,7 +15,7 @@ import (
 var (
 	server 		*gin.Engine
 
-	product 	services.Products
+	products 	services.Products
 )
 
 func init (){
@@ -24,7 +24,9 @@ func init (){
 		log.Fatal("? Could not load environment variables", err)
 	}
 
-	product = services.NewProducts()
+	services.Client = &http.Client{Timeout:20 * time.Second}
+
+	products = services.NewProducts()
 
 	server = gin.Default()
 }
@@ -36,10 +38,7 @@ func main () {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
-	services.Client = &http.Client{Timeout:20 * time.Second}
-
-	product.GetPrice(config)
-
+	 products.GetPrice(config)
 
 
 
