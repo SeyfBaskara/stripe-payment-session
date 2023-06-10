@@ -15,7 +15,7 @@ import (
 var (
 	server 		*gin.Engine
 
-	products 	services.Products
+	product 	services.ProductDetails
 )
 
 func init (){
@@ -26,7 +26,7 @@ func init (){
 
 	services.Client = &http.Client{Timeout:20 * time.Second}
 
-	products = services.NewProducts()
+	product = services.NewProducts()
 
 	server = gin.Default()
 }
@@ -38,7 +38,7 @@ func main () {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
-	 products.GetPrice(config)
+	 product.GetPrice(config)
 
 
 
