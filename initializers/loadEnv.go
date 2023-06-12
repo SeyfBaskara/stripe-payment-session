@@ -9,6 +9,7 @@ type Config struct {
 	ContentfulAccesToken 	string `mapstructure:"CONTENTFUL_ACCESS_TOKEN"`
 	EnvironmentID			string `mapstructure:"CONTENTFUL_ENVIRONMENT_ID"`
 	ContentTypes			string `mapstructure:"CONTENTFUL_CONTENT_TYPES"`
+	StripeSecretKey			string `mapstructure:"STRIPE_SECRET_KEY"`
 	ServerPort     			string `mapstructure:"PORT"`
 }
 
