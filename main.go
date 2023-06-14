@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	"github.com/seyfBaskara/stripe-payment-session/initializers"
 	"github.com/seyfBaskara/stripe-payment-session/services"
 	"github.com/stripe/stripe-go/v74"
@@ -30,6 +31,12 @@ func init (){
 	productD = services.NewProducts()
 
 	server = gin.Default()
+
+	//NOTE there is still 
+
+	config := cors.DefaultConfig()
+  	config.AllowOrigins = []string{"http://localhost:3000"}
+  	server.Use(cors.New(config))
 }
 
 
@@ -41,7 +48,7 @@ func main () {
 
 	server.LoadHTMLGlob("templates/*")
 	stripe.Key = config.StripeSecretKey
-
+	
 	//  product.GetPrice(config)
 
 	router := server.Group("api")
@@ -68,6 +75,7 @@ func main () {
 	})
 
 	router.POST("/create-checkout-session", services.CreateCheckoutSession)
+	router.POST("/test", services.CreateSessionTest)
 	
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
