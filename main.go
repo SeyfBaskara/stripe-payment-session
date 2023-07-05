@@ -32,8 +32,6 @@ func init (){
 
 	server = gin.Default()
 
-	//NOTE there is still 
-
 	config := cors.DefaultConfig()
   	config.AllowOrigins = []string{"http://localhost:3000"}
   	server.Use(cors.New(config))
