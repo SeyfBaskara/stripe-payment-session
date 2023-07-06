@@ -1,17 +1,40 @@
 package services
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/seyfBaskara/stripe-payment-session/initializers"
 	"github.com/seyfBaskara/stripe-payment-session/models"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
 )
 
+var (
+	productD 	ProductDetails
+)
+
 
 func CreateSessionTest (ctx *gin.Context){
+	config, err := initializers.LoadConfig(".")
+	if err != nil {
+		log.Fatal("? Could not load environment variables", err)
+	}
+
+	Client = &http.Client{Timeout:20 * time.Second}
+
+	productD = NewProducts()
+	
+	prices, err := productD.GetPrice(config)
+	if err != nil {
+		log.Fatal("Could not get prices", err)
+	}
+
+	fmt.Println(prices)
+
 	var payload []*models.CheckoutItem
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
@@ -28,6 +51,8 @@ func CreateSessionTest (ctx *gin.Context){
 		}
 		items = append(items, newItem)
 	}
+
+
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": items})
 
 }

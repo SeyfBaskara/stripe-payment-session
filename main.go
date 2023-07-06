@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"time"
+	// "time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
@@ -16,8 +16,6 @@ import (
 
 var (
 	server 		*gin.Engine
-
-	productD 	services.ProductDetails
 )
 
 func init (){
@@ -25,10 +23,6 @@ func init (){
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
-
-	services.Client = &http.Client{Timeout:20 * time.Second}
-
-	productD = services.NewProducts()
 
 	server = gin.Default()
 
@@ -47,8 +41,6 @@ func main () {
 	server.LoadHTMLGlob("templates/*")
 	stripe.Key = config.StripeSecretKey
 	
-	//  product.GetPrice(config)
-
 	router := server.Group("api")
 	router.GET("/healthcheck", func(ctx *gin.Context) {
 	  ctx.JSON(http.StatusOK, gin.H{
