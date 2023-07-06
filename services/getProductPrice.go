@@ -23,17 +23,17 @@ func NewProducts() ProductDetails {
 	return pd
 }
 
-func (pd *ProductDetails) GetPrice (config initializers.Config){
+func (pd *ProductDetails) GetPrice (config initializers.Config) ([]models.ProductFields, error) {
 
 	url := fmt.Sprintf("https://cdn.contentful.com/spaces/%s/environments/%s/entries?content_type=%s", config.ContentfulSpaceID, config.EnvironmentID, config.ContentTypes)
 
 	err := GetJson(url, config.ContentfulAccesToken ,&pd.Products)
 	if err != nil{
 		fmt.Printf("error getting product: %v\n", err.Error())
-		return
-	}else {
-		fmt.Println(pd.Products.Items)
+		return nil, err
 	}
+
+	return pd.Products.Items, nil
 
 }
 
