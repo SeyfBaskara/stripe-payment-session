@@ -40,7 +40,6 @@ func CreateSessionTest (ctx *gin.Context){
 	}
 
 	var payload []*models.CheckoutItem
-
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -66,29 +65,48 @@ func CreateSessionTest (ctx *gin.Context){
 
 
 func CreateCheckoutSession(ctx *gin.Context) {
-	domain := "http://localhost:8080"
+	domain := "http://localhost:3000"
 
+	config, err := initializers.LoadConfig(".")
+	if err != nil {
+		log.Fatal("? Could not load environment variables", err)
+	}
+
+	Client = &http.Client{Timeout:20 * time.Second}
+
+	productD = NewProducts()
+
+	prices, err := productD.GetPrice(config)
+	if err != nil {
+		log.Fatal("Could not get prices", err)
+	}
+
+	priceMap := make(map[int]int)
+	for _, price := range prices {
+		priceMap[price.Fields.Id] = price.Fields.Price
+	}
+	
 	var payload []*models.CheckoutItem
-
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-
 	var lineItems []*stripe.CheckoutSessionLineItemParams
 	for _, item := range payload {
+		if price, ok := priceMap[item.Id]; ok {
 		lineItem := &stripe.CheckoutSessionLineItemParams{
 			PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
 				Currency: stripe.String("usd"),
 				ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 					Name: stripe.String(item.ProductName),
 				},
-				UnitAmount: stripe.Int64(1000), // Replace with the actual price
+				UnitAmount: stripe.Int64(int64(price * 100)), 
 			},
 			Quantity: stripe.Int64(item.Quantity),
 		}
 		lineItems = append(lineItems, lineItem)
+	}
 	}
 
 	// Create a new Checkout Session
@@ -96,7 +114,7 @@ func CreateCheckoutSession(ctx *gin.Context) {
 		LineItems:          lineItems,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 		 SuccessURL: stripe.String(domain + "/api/success"),
-	 	 CancelURL: stripe.String(domain + "/api/cancel"),
+	 	 CancelURL: stripe.String(domain + "/checkout"),
 	}
 
 	s, err := session.New(params)
@@ -107,9 +125,3 @@ func CreateCheckoutSession(ctx *gin.Context) {
   
 	ctx.JSON(http.StatusSeeOther, gin.H{"url": s.URL})
   }
-
-  /*
-  - get product price from prices list with id
-  - create new payload with matched prices
-  - append new payload array to items variable 
-  */
