@@ -27,13 +27,17 @@ func CreateSessionTest (ctx *gin.Context){
 	Client = &http.Client{Timeout:20 * time.Second}
 
 	productD = NewProducts()
-	
+
 	prices, err := productD.GetPrice(config)
 	if err != nil {
 		log.Fatal("Could not get prices", err)
 	}
 
 	fmt.Println(prices)
+	priceMap := make(map[int]int)
+	for _, price := range prices {
+		priceMap[price.Fields.Id] = price.Fields.Price
+	}
 
 	var payload []*models.CheckoutItem
 
@@ -44,12 +48,15 @@ func CreateSessionTest (ctx *gin.Context){
 
 	var items []models.CheckoutItem
 	for _, item := range payload {
-		newItem := models.CheckoutItem{
-			Id:          item.Id,
-			ProductName: item.ProductName,
-			Quantity:    item.Quantity,
+		if price, ok := priceMap[item.Id]; ok {
+			newItem := models.CheckoutItem{
+				Id:          item.Id,
+				ProductName: item.ProductName,
+				Quantity:    item.Quantity,
+				Price: price,
+			}
+			items = append(items, newItem)
 		}
-		items = append(items, newItem)
 	}
 
 
@@ -100,3 +107,9 @@ func CreateCheckoutSession(ctx *gin.Context) {
   
 	ctx.JSON(http.StatusSeeOther, gin.H{"url": s.URL})
   }
+
+  /*
+  - get product price from prices list with id
+  - create new payload with matched prices
+  - append new payload array to items variable 
+  */
