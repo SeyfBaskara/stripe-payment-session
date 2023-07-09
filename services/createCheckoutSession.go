@@ -113,7 +113,7 @@ func CreateCheckoutSession(ctx *gin.Context) {
 	params := &stripe.CheckoutSessionParams{
 		LineItems:          lineItems,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		 SuccessURL: stripe.String(domain + "/api/success"),
+		 SuccessURL: stripe.String(domain + "/success"),
 	 	 CancelURL: stripe.String(domain + "/checkout"),
 	}
 
