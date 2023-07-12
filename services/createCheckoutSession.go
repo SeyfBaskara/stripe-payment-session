@@ -109,6 +109,18 @@ func CreateCheckoutSession(ctx *gin.Context) {
 	}
 	}
 
+	// Add shipping cost line item
+	shippingLineItem := &stripe.CheckoutSessionLineItemParams{
+		PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+			Currency:    stripe.String("usd"),
+			ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{Name: stripe.String("Shipping")},
+			UnitAmount:  stripe.Int64(int64(5000)),
+		},
+		Quantity: stripe.Int64(1), 
+	}
+	lineItems = append(lineItems, shippingLineItem)
+
+
 	// Create a new Checkout Session
 	params := &stripe.CheckoutSessionParams{
 		LineItems:          lineItems,
