@@ -27,7 +27,7 @@ func init (){
 	server = gin.Default()
 
 	config := cors.DefaultConfig()
-  	config.AllowOrigins = []string{"http://localhost:3000"}
+  	config.AllowOrigins = []string{"https://audiophile-store-chi.vercel.app"}
   	server.Use(cors.New(config))
 }
 
