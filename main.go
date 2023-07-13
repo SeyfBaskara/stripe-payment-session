@@ -19,16 +19,16 @@ var (
 )
 
 func init (){
-	_, err := initializers.LoadConfig(".")
+	config, err := initializers.LoadConfig(".")
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
 	server = gin.Default()
 
-	config := cors.DefaultConfig()
-  	config.AllowOrigins = []string{"https://audiophile-store-chi.vercel.app"}
-  	server.Use(cors.New(config))
+	configCors := cors.DefaultConfig()
+  	configCors.AllowOrigins = []string{config.Domain}
+  	server.Use(cors.New(configCors))
 }
 
 

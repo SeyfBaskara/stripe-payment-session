@@ -55,8 +55,6 @@ func createLineItems(payload []*models.CheckoutItem, priceMap map[int]int) ([]*s
 }
 
 func CreateCheckoutSession(ctx *gin.Context) {
-	domain := "http://localhost:3000"
-
 	Client = &http.Client{Timeout:20 * time.Second}
 
 	config, err := initializers.LoadConfig(".")
@@ -96,8 +94,8 @@ func CreateCheckoutSession(ctx *gin.Context) {
 	params := &stripe.CheckoutSessionParams{
 		LineItems:          lineItems,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		 SuccessURL: stripe.String(domain + "/success"),
-	 	 CancelURL: stripe.String(domain + "/checkout"),
+		 SuccessURL: stripe.String(config.Domain + "/success"),
+	 	 CancelURL: stripe.String(config.Domain + "/checkout"),
 	}
 
 	s, err := session.New(params)

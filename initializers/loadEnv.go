@@ -11,6 +11,7 @@ type Config struct {
 	ContentTypes			string `mapstructure:"CONTENTFUL_CONTENT_TYPES"`
 	StripeSecretKey			string `mapstructure:"STRIPE_SECRET_KEY"`
 	ServerPort     			string `mapstructure:"PORT"`
+	Domain     				string `mapstructure:"DOMAIN"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
